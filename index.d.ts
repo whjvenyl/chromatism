@@ -87,11 +87,33 @@ export namespace ColourModes {
     export type CIELAB = { L: number; a: number; b: number; };
 
     /**
+     * CIELUV (L*u*v*) Color Object
+     * @example
+     * { L: 53.23, u: 175.05, v: 37.75 }
+     */
+    export type CIELUV = { L: number; u: number; v: number; };
+
+    /**
+     * CIELCH (L*C*h*) Color Object
+     * @example
+     * { L: 53.23, C: 179.08, h: 12.17 }
+     */
+    export type CIELCH = { L: number; C: number; h: number; };
+
+    /**
+     * HSLuv Color Object
+     * @example
+     * { L: 53.23, C: 179.08, h: 12.17 }
+     */
+    export type HSLUV = { hu: number; s: number; l: number; };
+
+    /**
      * Represents all available color modes.
      */
     export type Any = (
         HEX | RGB | CSSRGB | HSL | CSSHSL |
-        HSV | CMYK | YIQ | XYZ | XYY | LMS | CIELAB
+        HSV | CMYK | YIQ | XYZ | XYY | LMS |
+        CIELAB | CIELUV | CIELCH | HSLUV
     );
 }
 
@@ -111,6 +133,9 @@ export type ColourObject = {
     xyY: ColourModes.XYY;
     lms: ColourModes.LMS;
     cielab: ColourModes.CIELAB;
+    cieluv: ColourModes.CIELUV;
+    cielch: ColourModes.CIELCH;
+    hsluv: ColourModes.HSLUV;
 };
 
 /**
@@ -122,7 +147,7 @@ export type ColourObjectArray = {[P in keyof ColourObject]: ColourObject[P][]};
  * Performs colour transformations.
  * @param colour - Any supported colour mode.
  * @returns A colour object containing all available transforms.
- * @see {@link https://github.com/toish/chromatism/blob/883f7c56692aeb9339be7f17c37386a098057f88/README.md#currency_exchange-colour-transformations}
+ * @see {@link https://github.com/toish/chromatism/blob/master/README.md#currency_exchange-colour-transformations}
  */
 export function convert(colour: ColourModes.Any): ColourObject;
 
@@ -130,7 +155,7 @@ export function convert(colour: ColourModes.Any): ColourObject;
  * Generate a complementary colour
  * @param colour - Any supported colour mode.
  * @returns The complementary colour.
- * @see {@link https://github.com/toish/chromatism/blob/883f7c56692aeb9339be7f17c37386a098057f88/README.md#generate-a-complementary-colour}
+ * @see {@link https://github.com/toish/chromatism/blob/master/README.md#generate-a-complementary-colour}
  */
 export function complementary(colour: ColourModes.Any): ColourObject;
 
@@ -138,7 +163,7 @@ export function complementary(colour: ColourModes.Any): ColourObject;
  * Generate an array of triad colours
  * @param colour - Any supported colour mode.
  * @returns Array of 3 colour objects.
- * @see {@link https://github.com/toish/chromatism/blob/883f7c56692aeb9339be7f17c37386a098057f88/README.md#generate-an-array-of-triad-colours}
+ * @see {@link https://github.com/toish/chromatism/blob/master/README.md#generate-an-array-of-triad-colours}
  */
 export function triad(colour: ColourModes.Any): ColourObjectArray;
 
@@ -146,13 +171,37 @@ export function triad(colour: ColourModes.Any): ColourObjectArray;
  * Generate an array of tetrad colours
  * @param colour - Any supported colour mode.
  * @returns Array of 4 colour objects.
- * @see {@link https://github.com/toish/chromatism/blob/883f7c56692aeb9339be7f17c37386a098057f88/README.md#generate-an-array-of-tetrad-colours}
+ * @see {@link https://github.com/toish/chromatism/blob/master/README.md#generate-an-array-of-tetrad-colours}
  */
 export function tetrad(colour: ColourModes.Any): ColourObjectArray;
 
 /**
+ * Generate a complementary colour with uniform lightness.
+ * @param colour - Any supported colour mode.
+ * @returns The complementary colour.
+ * @see {@link https://github.com/toish/chromatism/blob/master/README.md#generate-a-complementary-colour}
+ */
+export function uniformComplementary(colour: ColourModes.Any): ColourObject;
+
+/**
+ * Generate an array of triad colours with uniform lightness.
+ * @param colour - Any supported colour mode.
+ * @returns Array of 3 colour objects.
+ * @see {@link https://github.com/toish/chromatism/blob/master/README.md#generate-an-array-of-triad-colours}
+ */
+export function uniformTriad(colour: ColourModes.Any): ColourObjectArray;
+
+/**
+ * Generate an array of tetrad colours with uniform lightness.
+ * @param colour - Any supported colour mode.
+ * @returns Array of 4 colour objects.
+ * @see {@link https://github.com/toish/chromatism/blob/master/README.md#generate-an-array-of-tetrad-colours}
+ */
+export function uniformTetrad(colour: ColourModes.Any): ColourObjectArray;
+
+/**
  * Find the mid point between two colours
- * [See more]{@link https://github.com/toish/chromatism/blob/883f7c56692aeb9339be7f17c37386a098057f88/README.md#find-the-mid-point-between-two-colours}
+ * [See more]{@link https://github.com/toish/chromatism/blob/master/README.md#find-the-mid-point-between-two-colours}
  * @param colourOne - Any supported colour mode.
  * @param colourTwo - Any supported colour mode.
  * @returns The mid point colour.
@@ -162,7 +211,7 @@ export function mid(colourOne: ColourModes.Any, colourTwo: ColourModes.Any): Col
 /**
  * Invert a colour
  * @param colour - Any supported colour mode.
- * @see {@link https://github.com/toish/chromatism/blob/883f7c56692aeb9339be7f17c37386a098057f88/README.md#invert-a-colour}
+ * @see {@link https://github.com/toish/chromatism/blob/master/README.md#invert-a-colour}
  * @returns The inverted colour.
  */
 export function invert(colour: ColourModes.Any): ColourObject;
@@ -171,7 +220,7 @@ export function invert(colour: ColourModes.Any): ColourObject;
  * Invert a grey colour
  * @param colour - Any supported colour mode.
  * @returns The inverted colour.
- * @see {@link https://github.com/toish/chromatism/blob/883f7c56692aeb9339be7f17c37386a098057f88/README.md#invert-a-grey-colour}
+ * @see {@link https://github.com/toish/chromatism/blob/master/README.md#invert-a-grey-colour}
  */
 export function invertLightness(colour: ColourModes.Any): ColourObject;
 
@@ -180,7 +229,7 @@ export function invertLightness(colour: ColourModes.Any): ColourObject;
  * @param colourOne - Any supported colour mode.
  * @param colourTwo - Any supported colour mode.
  * @returns The blended colour.
- * @see {@link https://github.com/toish/chromatism/blob/883f7c56692aeb9339be7f17c37386a098057f88/README.md#blend-two-colours-multiply} 
+ * @see {@link https://github.com/toish/chromatism/blob/master/README.md#blend-two-colours-multiply}
  */
 export function multiply(colourOne: ColourModes.Any, colourTwo: ColourModes.Any): ColourObject;
 
@@ -190,7 +239,7 @@ export function multiply(colourOne: ColourModes.Any, colourTwo: ColourModes.Any)
  * @param sections - How many adjacent colours to return.
  * @param colour - Any supported colour mode.
  * @returns An array of adjacent huge-shifted colours.
- * @see {@link https://github.com/toish/chromatism/blob/883f7c56692aeb9339be7f17c37386a098057f88/README.md#generate-an-array-of-adjacent-hue-shifted-colours-rainbow-effect}
+ * @see {@link https://github.com/toish/chromatism/blob/master/README.md#generate-an-array-of-adjacent-hue-shifted-colours-rainbow-effect}
  */
 export function adjacent(degrees: number, sections: number, colour: ColourModes.Any): ColourObjectArray;
 
@@ -200,7 +249,7 @@ export function adjacent(degrees: number, sections: number, colour: ColourModes.
  * @param colourFrom - Any supported colour mode.
  * @param colourTo - Any supported colour mode.
  * @returns An array containing the colour fade.
- * @see {@link https://github.com/toish/chromatism/blob/883f7c56692aeb9339be7f17c37386a098057f88/README.md#generate-an-array-of-the-fade-between-two-colours}
+ * @see {@link https://github.com/toish/chromatism/blob/master/README.md#generate-an-array-of-the-fade-between-two-colours}
  */
 export function fade(amount: number, colourFrom: ColourModes.Any, colourTo: ColourModes.Any): ColourObjectArray;
 
@@ -209,7 +258,7 @@ export function fade(amount: number, colourFrom: ColourModes.Any, colourTo: Colo
  * @param percent - A number between -100 and 100
  * @param colour - Any supported colour mode.
  * @returns The colour shade
- * @see {@link https://github.com/toish/chromatism/blob/883f7c56692aeb9339be7f17c37386a098057f88/README.md#generate-a-new-shade-of-a-colour}
+ * @see {@link https://github.com/toish/chromatism/blob/master/README.md#generate-a-new-shade-of-a-colour}
  */
 export function shade(percent: number, colour: ColourModes.Any): ColourObject;
 
@@ -218,7 +267,7 @@ export function shade(percent: number, colour: ColourModes.Any): ColourObject;
  * @param percent - A number between -100 and 100
  * @param colour - Any supported colour mode.
  * @returns The new saturation of colour.
- * @see {@link https://github.com/toish/chromatism/blob/883f7c56692aeb9339be7f17c37386a098057f88/README.md#generate-a-new-saturation-of-a-colour}
+ * @see {@link https://github.com/toish/chromatism/blob/master/README.md#generate-a-new-saturation-of-a-colour}
  */
 export function saturation(percent: number, colour: ColourModes.Any): ColourObject;
 
@@ -227,7 +276,7 @@ export function saturation(percent: number, colour: ColourModes.Any): ColourObje
  * @param percent - A number between -100 and 100
  * @param colour - Any supported colour mode.
  * @returns The new colour.
- * @see {@link https://github.com/toish/chromatism/blob/883f7c56692aeb9339be7f17c37386a098057f88/README.md#change-colours-brightness}
+ * @see {@link https://github.com/toish/chromatism/blob/master/README.md#change-colours-brightness}
  */
 export function brightness(percent: number, colour: ColourModes.Any): ColourObject;
 
@@ -236,7 +285,7 @@ export function brightness(percent: number, colour: ColourModes.Any): ColourObje
  * @param degrees - The degree of hue to shift by (in degrees, positive or negative)
  * @param colour - Any supported colour mode.
  * @returns The new colour.
- * @see {@link https://github.com/toish/chromatism/blob/883f7c56692aeb9339be7f17c37386a098057f88/README.md#shift-the-hue-of-a-colour}
+ * @see {@link https://github.com/toish/chromatism/blob/master/README.md#shift-the-hue-of-a-colour}
  */
 export function hue(degrees: number, colour: ColourModes.Any): ColourObject;
 
@@ -245,7 +294,7 @@ export function hue(degrees: number, colour: ColourModes.Any): ColourObject;
  * @param contrastCoeff - A decimal value, normally between 0 and 4
  * @param colour - Any supported colour mode.
  * @returns The shifted contrast colour.
- * @see {@link https://github.com/toish/chromatism/blob/883f7c56692aeb9339be7f17c37386a098057f88/README.md#shift-the-contrast-of-a-colour}
+ * @see {@link https://github.com/toish/chromatism/blob/master/README.md#shift-the-contrast-of-a-colour}
  */
 export function contrast(contrastCoeff: number, colour: ColourModes.Any): ColourObject;
 
@@ -253,7 +302,7 @@ export function contrast(contrastCoeff: number, colour: ColourModes.Any): Colour
  * Greyscale version of the colour
  * @param colour - Any supported colour mode.
  * @returns The greyscale colour
- * @see {@link https://github.com/toish/chromatism/blob/883f7c56692aeb9339be7f17c37386a098057f88/README.md#greyscale-version-of-the-colour}
+ * @see {@link https://github.com/toish/chromatism/blob/master/README.md#greyscale-version-of-the-colour}
  */
 export function greyscale(colour: ColourModes.Any): ColourObject;
 
@@ -261,7 +310,7 @@ export function greyscale(colour: ColourModes.Any): ColourObject;
  * Sepia version of the colour
  * @param colour - Any supported colour mode.
  * @returns The sepia version of the colour
- * @see {@link https://github.com/toish/chromatism/blob/883f7c56692aeb9339be7f17c37386a098057f88/README.md#sepia-version-of-the-colour}
+ * @see {@link https://github.com/toish/chromatism/blob/master/README.md#sepia-version-of-the-colour}
  */
 export function sepia(colour: ColourModes.Any): ColourObject;
 
@@ -269,7 +318,7 @@ export function sepia(colour: ColourModes.Any): ColourObject;
  * Determine accessible colour for foreground text
  * @param colour - Any supported colour mode.
  * @returns The accessible foreground colour
- * @see {@link https://github.com/toish/chromatism/blob/883f7c56692aeb9339be7f17c37386a098057f88/README.md#determine-accessible-colour-for-foreground-text}
+ * @see {@link https://github.com/toish/chromatism/blob/master/README.md#determine-accessible-colour-for-foreground-text}
  */
 export function contrastRatio(colour: ColourModes.Any): ColourObject;
 
@@ -279,7 +328,7 @@ export function contrastRatio(colour: ColourModes.Any): ColourObject;
  * @param illuminantColour - A value from the {@ILLUMINANTS} constant
  * @param sourceIlluminant [{ColourModes.XYZ}] - optional, assumed D65
  * @returns The illuminant shifted colour
- * @see {@link https://github.com/toish/chromatism/blob/883f7c56692aeb9339be7f17c37386a098057f88/README.md#chromatic-adaptation-white-point}
+ * @see {@link https://github.com/toish/chromatism/blob/master/README.md#chromatic-adaptation-white-point}
  */
 export function adapt(colour: ColourModes.Any, illuminantColour: ColourModes.Any, sourceIlluminant?: ColourModes.Any): ColourObject;
 
@@ -290,9 +339,17 @@ export function adapt(colour: ColourModes.Any, illuminantColour: ColourModes.Any
  * @param luminanceWeight [1] - optional
  * @param chromaWeight [1] - optional
  * @returns A measure of how different the two supplied colours are.
- * @see {@link https://github.com/toish/chromatism/blob/883f7c56692aeb9339be7f17c37386a098057f88/README.md#colour-difference}
+ * @see {@link https://github.com/toish/chromatism/blob/master/README.md#colour-difference}
  */
 export function difference(colourOne: ColourModes.Any, colourTwo: ColourModes.Any, luminanceWeight?: number, chromaWeight?: number): number;
+
+/**
+ * Colour Temperature
+ * @param colour - Any supported colour mode.
+ * @returns The correlated colour temperature of the supplied colour.
+ * @see {@link https://github.com/toish/chromatism/blob/master/README.md#colour-temperature}
+ */
+export function temperature(colour: ColourModes.Any): number;
 
 /**
  * Properties representing standard CIE illuminants constants
@@ -312,6 +369,21 @@ interface IlluminantConstants {
 }
 
 /**
- * Exposes useful built in constants in XYZ format
+ * Exposes standard CIE Illuminants in XYZ colour mode.
  */
 export const ILLUMINANTS: IlluminantConstants;
+
+/**
+ * Properties representing useful transform matricies
+ */
+interface TransformConstants {
+    BRADFORD: Array<number>;
+    INVERSE_BRADFORD: Array<number>;
+    SRGB_XYZ: Array<number>;
+    INVERSE_SRGB_XYZ: Array<number>;
+}
+
+/**
+ * Exposes useful built in colour transformation matrcies
+ */
+export const TRANSFORMS: TransformConstants;

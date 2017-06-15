@@ -1,4 +1,8 @@
 function fromXYZ( { conversions, operations, helpers }, to, value ) {
+  const epsilon = 0.008856;
+  const kappa = 903.3;
+  const white = helpers.getIlluminant('D65');
+
   switch (to) {
 
     case "rgb":
@@ -8,11 +12,7 @@ function fromXYZ( { conversions, operations, helpers }, to, value ) {
       // Whitepoint is D65
       // sRGB standard stuff eh!
       // [ Shamelessly stolen off Wikipedia ]
-      let M = [
-        [ 3.2406, -1.5372, -0.4986 ],
-        [ -0.9689, 1.8758, 0.0415 ],
-        [ 0.0557, -0.2040, 1.0570 ]
-      ]
+      let M = helpers.getTransform('INVERSE_SRGB_XYZ')
 
       let linear = M.map((m) => {
         return normalized.reduce((acc, v, key) => {
@@ -31,11 +31,7 @@ function fromXYZ( { conversions, operations, helpers }, to, value ) {
       let valueArray = [ value.X, value.Y, value.Z ].map((x) => x / 100)
 
       // Bradford Transformation
-      let Mb = [
-        [ 0.8951000, 0.2664000, -0.1614000 ],
-        [ -0.7502000, 1.7135000, 0.0367000 ],
-        [ 0.0389000, -0.0685000, 1.0296000 ]
-      ]
+      let Mb = helpers.getTransform('BRADFORD')
 
       let resultArray = Mb.map((m) => {
         return valueArray.reduce((acc, v, key) => {
@@ -50,10 +46,6 @@ function fromXYZ( { conversions, operations, helpers }, to, value ) {
       }
 
     case "cielab":
-      const epsilon = 0.008856;
-      const kappa = 903.3;
-      const white = helpers.getIlluminant('D65');
-
       const Xr = value.X / white.X;
       const Yr = value.Y / white.Y;
       const Zr = value.Z / white.Z;
@@ -65,6 +57,24 @@ function fromXYZ( { conversions, operations, helpers }, to, value ) {
         L: ((116 * Fy) - 16),
         a: 500 * (Fx - Fy),
         b: 200 * (Fy - Fz)
+      };
+
+    case "cieluv":
+
+      const yr = value.Y / white.Y
+
+      const L = (yr > epsilon ? (116 * helpers.cbrt(yr)) - 16 : kappa * yr)
+
+      const chromeCoordsU = (c) => (c.X * 4) / (c.X + (15 * c.Y) + (3 * c.Z))
+      const chromeCoordsV = (c) => (c.Y * 9) / (c.X + (15 * c.Y) + (3 * c.Z))
+
+      const u = 13 * L * (chromeCoordsU(value) - chromeCoordsU(white))
+      const v = 13 * L * (chromeCoordsV(value) - chromeCoordsV(white))
+
+      return {
+        L,
+        u,
+        v
       };
 
     case "xyY":

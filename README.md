@@ -39,6 +39,7 @@ A simple set of utility functions for colours.
       - [Chromatic Adaptation (White point)](#chromatic-adaptation-white-point)
     + [Colour Metering Functions](#1234-colour-metering-functions)
       - [Colour Difference](#colour-difference)
+      - [Colour Temperature](#colour-temperature)
   * [Constants](#constants)
   * [Scales + Colour Spaces](#scales--colour-spaces)
   * [Colour Modes](#colour-modes)
@@ -56,12 +57,17 @@ $ npm install --save chromatism
 
 #### CommonJS
 ```javascript
-var chromatism = require("chromatism");
+var chromatism = require('chromatism');
+```
+
+#### ES Modules
+```javascript
+import chromatism from 'chromatism';
 ```
 
 #### Browser without bundling
 ```html
-<script type="text/javascript" src="path-to-files/dist/chromatism.min.js"></script>
+<script type="text/javascript" src="path-to-files/dist/chromatism.js"></script>
 ```
 
 
@@ -91,6 +97,12 @@ All colour modes supported can be converted to any other. This does however mean
 var newColour = chromatism.complementary( colour ).rgb;
 ```
 
+There is also a `uniform` version of this function. When using the uniform version, the output colours will have the same apparent lightness as the source colour, which normally means they'll look nicer together. (There is a performance trade-off however.)
+
+```javascript
+var newColour = chromatism.uniformComplementary( colour ).rgb;
+```
+
 ![Complementary](https://toi.sh/cdn/chromatism/complementary.png)
 
 ---
@@ -100,6 +112,12 @@ var newColour = chromatism.complementary( colour ).rgb;
 var newColour = chromatism.triad( colour ).hsl;
 ```
 
+There is also a `uniform` version of this function. When using the uniform version, the output colours will have the same apparent lightness as the source colour, which normally means they'll look nicer together. (There is a performance trade-off however.)
+
+```javascript
+var newColour = chromatism.uniformTriad( colour ).rgb;
+```
+
 ![Triad](https://toi.sh/cdn/chromatism/triad.png)
 
 ---
@@ -107,6 +125,12 @@ var newColour = chromatism.triad( colour ).hsl;
 #### Generate an array of tetrad colours
 ```javascript
 var newColour = chromatism.tetrad( colour ).cmyk;
+```
+
+There is also a `uniform` version of this function. When using the uniform version, the output colours will have the same apparent lightness as the source colour, which normally means they'll look nicer together. (There is a performance trade-off however.)
+
+```javascript
+var newColour = chromatism.uniformTetrad( colour ).rgb;
 ```
 
 ![Tetrad](https://toi.sh/cdn/chromatism/tetrad.png)
@@ -277,6 +301,14 @@ var diff = chromatism.difference( colourOne, colourTwo, [luminance weight], [chr
 ```
 Returns a measure of how different the two supplied colours are. Luminance and Chroma weight are equal to *l* and *c* in the [CMC l:c](http://www.brucelindbloom.com/index.html?Eqn_DeltaE_CMC.html) Delta-E equation. By default they are both set to 1. (Thus testing imperceptibility)
 
+#### Colour Temperature
+```javascript
+var diff = chromatism.temperature( colour );
+```
+Returns the [correlated colour temperature](https://en.wikipedia.org/wiki/Color_temperature) of the supplied colour in Kelvin. (A higher number indicates a blue-er colour; a lower number indicates a red-er colour.) This should only be used when working with colours that could actually be emitted by a black-body radiator (think glowing stuff, such as tungsten in incandescent lightbulbs), [as colour temperature is only an approximation of the colour to a narrow strip of the XYZ gamut.](https://en.wikipedia.org/wiki/Color_temperature#/media/File:PlanckianLocus.png) (Note the thin line in the middle of this chart.)
+
+Colour temperature is calculated via [McCamy's CCT fomula. ](ttp://onlinelibrary.wiley.com/doi/10.1002/col.5080170211/abstract;jsessionid=D127570AD1D0FEF9A18424F5C0E987C5.f02t04)(DOI: 10.1002/col.5080170211) **Which may mean that colours temperatures beyond 6500K (CIE Illuminant D65) are not entirely accurate**
+
 ## Constants
 
 Chromatism has some useful constants built in, you can access them using the imported chromatism object.
@@ -284,6 +316,7 @@ Chromatism has some useful constants built in, you can access them using the imp
 | Reference | Values | Description |
 | --------- | ------ | ----------- |
 | `chromatism.ILLUMINANTS` | `.A`, `.B`, `.C`, `.D50`, `.D55`, `.D65`, `.D75`, `.E`, `.F2`, `.F7`, `.F11` | Standard CIE illuminants in XYZ format
+| `chromatism.TRANSFORMS` | `.BRADFORD`, `.INVERSE_BRADFORD`, `.SRGB_XYZ`, `.INVERSE_SRGB_XYZ` | Transformation matrices
 
 ## Scales + Colour Spaces
 | Mode                  | Scale                             | Colour Space |
@@ -291,15 +324,18 @@ Chromatism has some useful constants built in, you can access them using the imp
 | `.hex`                | #000000 - #FFFFFF                 | sRGB         |
 | `.rgb`                | (r, g, b) 0 - 255                 | sRGB         |
 | `.cssrgb`             | (r, g, b) 0 - 255                 | sRGB         |
-| `.hsl`                | (h) 0 - 365, (s, l) 0 - 100       | sRGB         |
-| `.csshsl`             | (h) 0 - 365, (s, l) 0 - 100       | sRGB         |
-| `.hsv`                | (h) 0 - 365, (s, v) 0 - 100       | sRGB         |
+| `.hsl`                | (h) 0 - 359, (s, l) 0 - 100       | sRGB         |
+| `.csshsl`             | (h) 0 - 359, (s, l) 0 - 100       | sRGB         |
+| `.hsv`                | (h) 0 - 359, (s, v) 0 - 100       | sRGB         |
 | `.cmyk`               | (c, m, y, k) 0 - 1                | CMYK         |
 | `.yiq`                | (y, i, q) 0 - 1                   | YUV          |
 | `.XYZ`                | (Y) 0 - 100, (X, Z) derived       | XYZ          |
 | `.xyY`                | (Y) 0 - 100, (x, y) 0 - 1         | XYZ          |
 | `.lms`                | (⍴, γ, β) 0 - 1                   | XYZ          |
-| `.cielab` (L\*a\*b\*) | (L) 0 - 100, (a, b) -128 - 128    | CIE          |
+| `.cielab` (L\*a\*b\*) | (L) 0 - 100, (a, b) -128 - 128    | CIELAB       |
+| `.cieluv` (L\*u\*v\*) | (L) 0 - 100, (u, v) -128 - 128    | CIELUV       |
+| `.cielch` (L\*C\*h\*) | (L) 0 - 100, (C, h) -128 - 128    | CIELCh       |
+| `.hsluv`              | (hu) 0 - 359, (s, l) 0 - 10       | CIELCh       |
 
 ## Colour Modes
 
@@ -317,6 +353,11 @@ Chromatism has some useful constants built in, you can access them using the imp
 | `.xyY`                | `{ x: 0.64, y: 0.33, Y: 21.26 }`                  |
 | `.lms`                | `{ rho: 42.266, gamma: 5.561, beta: 2.135 }`      |
 | `.cielab` (L\*a\*b\*) | `{ L: 53.23, a: 80.11, b: 67.22 }`                |
+| `.cieluv` (L\*u\*v\*) | `{ L: 53.23, u: 175.05, v: 37.75 }`               |
+| `.cielch` (L\*C\*h\*) | `{ L: 53.23, C: 179.08, h: 12.17 }`               |
+| `.hsluv`              | `{ hu: 12.17, s: 99.99, l: 53.23 }`               |
+
+:warning: **A note about CIELUV + CIELCH**: Conversion to CIELUV (and by extension, CIELCH) requires defining the illuminant, which can skew results slightly. By default, Chromatism assumes all colours are illuminated by `CIE D65`, which means that you may get differing chrominance values (±~10) if you are comparing against a CIELUV/CIELCH colour illuminated by anything other than D65.
 
 All functions return an object containing all modes of the result. (In getters, so don't worry, Chromatism doesn't calculate *all* the versions of the result when you use a function!)
 
